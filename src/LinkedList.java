@@ -27,27 +27,115 @@ public class LinkedList {
 
     // remove a card from a specific index
     public Card remove_from_index(int index) {
-        // FIXME
+        // edge case for removing head
+        if (index == 0) {
+            Node removed = head;
+            head.next.prev = null;
+            head = head.next;
+            size -= 1; // updates size
+            return removed.data;
+        }
+        // edge case for removing tail
+        if (index == size - 1) {
+            Node removed = tail;
+            tail.prev.next = null;
+            tail = tail.prev;
+            size -= 1; // updates size
+            return removed.data;
+        }
+        // regular case
+        Node removed = head;
+        int count = 1;
+        // while loop will stop once the node at index has been reached
+        while (count <= index) {
+            removed = removed.next;
+            count++;
+        }
+        removed.prev.next = removed.next;
+        removed.next.prev = removed.prev;
+        size -= 1; // updates size
+        return removed.data;
     }
 
     // insert a card at a specific index
     public void insert_at_index(Card x, int index) {
-        // FIXME
+        // edge case for inserting at head
+        if (index == 0) {
+            Node added = new Node(x);
+            head.prev = added;
+            added.next = head;
+            head = added;
+            size += 1; // updates size
+            return;
+        }
+        // edge case for inserting at tail
+        if (index == size - 1) {
+            Node added = new Node(x);
+            tail.prev.next = added;
+            added.prev = tail.prev;
+            added.next = tail;
+            tail.prev = added;
+            size += 1; // updates size
+            return;
+        }
+        // regular case
+        Node added = new Node(x);
+        Node curr = head;
+        int count = 1;
+        // while loop stops once node at target index has been reached
+        while (count <= index) {
+            curr = curr.next;
+            count++;
+        }
+        // updates links between nodes
+        curr.prev.next = added;
+        added.prev = curr.prev;
+        curr.prev = added;
+        added.next = curr;
+        size += 1; // updates size
     }
 
     // swap two cards in the deck at the specific indices
     public void swap(int index1, int index2) {
-        // FIXME
+        // my algorithm only works when index1 < index2 so i update their values if index2 < index1
+        if (index2 < index1) {
+            int temp = index1;
+            index1 = index2;
+            index2 = temp;
+        }
+        // if indices are equal no swap is needed
+        if (index1 == index2) {
+            return;
+        }
+        // regular case
+        Node target1 = new Node(remove_from_index(index1)); // target1 holds the node removed at index1
+        insert_at_index(target1.data, index2 - 1); // inserts at index2 -1 because removing a node decreases size and shifts all indices after the removed node down by 1
+        Node target2 = new Node(remove_from_index(index2)); // target2 holds the node removed at index2
+        insert_at_index(target2.data, index1); // inserts target2 at index1
     }
 
     // add card at the end of the list
     public void add_at_tail(Card data) {
-        // FIXME
+        Node n = new Node(data);
+        // if list is empty, assign a head
+        if (tail == null) {
+            head = n;
+            tail = n;
+        }
+        else {
+            tail.next = n;
+            n.prev = tail;
+            tail = n;
+        }
     }
 
     // remove a card from the beginning of the list
     public Card remove_from_head() {
-        // FIXME
+        // if removing from head, just return head data
+        if (head.next == null) {
+            return head.data;
+        }
+        return remove_from_index(0);
     }
 
     // check to make sure the linked list is implemented correctly by iterating forwards and backwards
